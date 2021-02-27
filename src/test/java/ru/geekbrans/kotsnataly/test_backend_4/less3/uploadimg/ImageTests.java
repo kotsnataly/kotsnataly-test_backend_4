@@ -1,4 +1,4 @@
-package ru.geekbrans.uploadimg;
+package ru.geekbrans.kotsnataly.test_backend_4.less3.uploadimg;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -24,8 +24,6 @@ public class ImageTests extends BaseTest{
         byte[] fileContent = getFileContentInBase64();
         encodedImage = Base64.getEncoder().encodeToString(fileContent);
     }
-
-
 
     @Test
     void uploadFileTest() {
@@ -59,7 +57,7 @@ public class ImageTests extends BaseTest{
 
     private byte[] getFileContentInBase64() {
         ClassLoader classLoader = getClass().getClassLoader();
-        File inputFile = new File(Objects.requireNonNull(classLoader.getResource("avatar.jpg")).getFile());
+        File inputFile = new File(Objects.requireNonNull(classLoader.getResource("avatar.png")).getFile());
         byte[] fileContent = new byte[0];
         try {
             fileContent =   FileUtils.readFileToByteArray(inputFile);

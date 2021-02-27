@@ -1,15 +1,7 @@
-package ru.geekbrans;
+package ru.geekbrans.kotsnataly.test_backend_4.less3;
 
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ru.geekbrans.uploadimg.BaseTest;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import ru.geekbrans.kotsnataly.test_backend_4.less3.uploadimg.BaseTest;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -20,8 +12,6 @@ import static org.hamcrest.Matchers.is;
 public class AccountTests extends BaseTest {
 
 
-
-//обновленная версия без хардкода
     @Test
     void getAccountInfoTest() {
         given()
@@ -40,7 +30,7 @@ public class AccountTests extends BaseTest {
                 .log()
                 .all()
                 .when()
-                .get("https://api.imgur.com/3/account/AnnaSmotrova")
+                .get("https://api.imgur.com/3/account/Shakjamuni")
                 .prettyPeek()
                 .then()
                 .statusCode(200);
@@ -49,9 +39,9 @@ public class AccountTests extends BaseTest {
     @Test
     void getAccountInfoWithoutToken() {
                 when()
-                .get("https://api.imgur.com/3/account/AnnaSmotrova")
+                .get("https://api.imgur.com/3/account/Shakjamuni")
                 .then()
-                .statusCode(200);
+                .statusCode(401);
     }
 
     @Test
@@ -61,7 +51,7 @@ public class AccountTests extends BaseTest {
                 .log()
                 .uri()
                 .when()
-                .get("https://api.imgur.com/3/account/AnnaSmotrova")
+                .get("https://api.imgur.com/3/account/Shakjamuni")
              //   .prettyPeek()
                 .then()
                 .statusCode(200)
@@ -72,7 +62,7 @@ public class AccountTests extends BaseTest {
                 .response()
                 .jsonPath()
                 .getString("data.url");
-        assertThat(url, equalTo("AnnaSmotrova"));
+        assertThat(url, equalTo("Shakjamuni"));
     }
 
     @Test
@@ -83,9 +73,9 @@ public class AccountTests extends BaseTest {
                 .uri()
                 .expect()
                 .body("success", is(true))
-                .body("data.url", is("AnnaSmotrova"))
+                .body("data.url", is("Shakjamuni"))
                 .when()
-                .get("https://api.imgur.com/3/account/AnnaSmotrova")
+                .get("https://api.imgur.com/3/account/Shakjamuni")
                 //   .prettyPeek()
                 .then()
                 .statusCode(200)

@@ -1,4 +1,4 @@
-package ru.geekbrans.uploadimg;
+package ru.geekbrans.kotsnataly.test_backend_4.less3.uploadimg;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
