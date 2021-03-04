@@ -1,5 +1,6 @@
 package ru.geekbrans.kotsnataly.test_backend_4.less3;
 
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.Test;
 import ru.geekbrans.kotsnataly.test_backend_4.less3.uploadimg.BaseTest;
 
@@ -22,6 +23,7 @@ public class AccountTests extends BaseTest {
                 .then()
                 .statusCode(200);
     }
+
 
     @Test
     void getAccountInfoWithLoggingTest() {

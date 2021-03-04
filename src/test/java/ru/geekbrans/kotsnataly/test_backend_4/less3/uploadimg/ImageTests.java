@@ -1,12 +1,15 @@
 package ru.geekbrans.kotsnataly.test_backend_4.less3.uploadimg;
 
+import io.restassured.RestAssured;
+import io.restassured.mapper.ObjectMapperType;
+import io.restassured.path.json.JsonPath;
+import netscape.javascript.JSObject;
 import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.Objects;
 
@@ -25,6 +28,138 @@ public class ImageTests extends BaseTest{
         encodedImage = Base64.getEncoder().encodeToString(fileContent);
     }
 
+    @Test
+    @Tag("SkipCleanup")  //таг для пропуска в tearDown
+    void getImageSimpleTest() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .statusCode(200);
+
+    }
+    @Test
+    @Tag("SkipCleanup")  //таг для пропуска в tearDown
+    void getUnexistenceImageSimpleTest() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+unexistenceHash)
+                .then()
+                .statusCode(404);
+
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void getImageJsonCorrectDescription() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .statusCode(200)
+                .extract()
+                .response()
+                .jsonPath()
+                .getString("data.description").equals("Everybody be cool, it is a Yoda");
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void getImageSizeIsCorrect() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .statusCode(200)
+                .extract()
+                .response()
+                .jsonPath()
+                .getString("data.width").equals("600");
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void isImage() {
+        String answer = given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .statusCode(200)
+                .extract()
+                .response()
+                .jsonPath()
+                .getString("data.type");
+        Assertions.assertTrue("image/jpeg".equals(answer));
+    }
+
+
+    @Test
+    @Tag("SkipCleanup")
+    void isSizeOfImageisNotNull() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .body("data.size",is(notNullValue()));
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void isDeleteHashPresented() {
+        given()
+                .headers("Authorization", token)
+                .get("https://api.imgur.com/3/image/"+imageHash)
+                .then()
+                .body("data.deletehash",is(notNullValue()));
+
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void tryingToDeleteBeingAnauthed() {
+        given()
+                .delete("https://api.imgur.com/3/image/" + imageHash)
+                .then()
+                .statusCode(401);
+        //в постмане возвращает 403, а здесь 401.
+    }
+
+
+    @Test
+    @Tag("SkipCleanup")
+    void tryingToUploadHugeFile() {
+        String answer = given()
+                .headers("Authorization", token)
+                .header("image", veryBigFile)
+                .post("https://api.imgur.com/3/image")
+                .then()
+                .statusCode(400)
+                .extract()
+                .response()
+                .jsonPath()
+                .getString("data.error");
+        Assertions.assertTrue("No image data was sent to the upload api".equals(answer));
+
+    }
+
+    @Test
+    @Tag("SkipCleanup")
+    void tryToPostNonImage() {
+        String answer = given()
+                .headers("Authorization", token)
+                .header("image", nonImage)
+                .post("https://api.imgur.com/3/image")
+                .then()
+                .statusCode(400)
+                .extract()
+                .jsonPath()
+                .getString("data.error");
+        Assertions.assertTrue("No image data was sent to the upload api".equals(answer));
+
+    }
+
+
+    //legacy test
     @Test
     void uploadFileTest() {
         uploadedImageHashCode = given()
@@ -45,7 +180,11 @@ public class ImageTests extends BaseTest{
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown(TestInfo testInfo) { //проверка на скиптаг чтобы не выбрасывались эксцепшены.
+        if(testInfo.getTags().contains("SkipCleanup")) {
+            return;
+        }//конец проверки
+
         given()
                 .headers("Authorization", token)
                 .when()

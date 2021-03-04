@@ -13,6 +13,10 @@ public abstract class BaseTest {
     protected static Properties prop = new Properties();
     protected static String token;
     protected static String username;
+    protected static String imageHash;
+    protected static String unexistenceHash;
+    protected static String veryBigFile;
+    protected static String nonImage;
     protected static Map<String, String> headers = new HashMap<>();
 
     @BeforeAll
@@ -20,7 +24,10 @@ public abstract class BaseTest {
         loadProperties();
         token = prop.getProperty("token");
         headers.put("Authorization", token);
-
+        imageHash = prop.getProperty("imageHash");
+        unexistenceHash = prop.getProperty("unexistenceHash");
+        veryBigFile = prop.getProperty("veryBigFile");
+        nonImage = prop.getProperty("nonImage");
         RestAssured.baseURI = prop.getProperty("base.url");
         username = prop.getProperty("username");
 //        RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
